@@ -1,0 +1,40 @@
+export class Router{
+    routes = {}
+    add(routeName, pages){
+        this.routes[routeName] = pages
+    }
+
+    route(event){
+        event = event || window.event
+        event.preventDefault()
+
+        window.history.pushState({},"", event.target.href)
+        this.handle()
+    }
+
+    handle(){
+        const {pathname} = window.location
+        const route = this.routes[pathname] || this.routes[404]
+
+        fetch(route)
+            .then(data => data.text())
+            .then((html) =>{
+                document.querySelector(".app").innerHTML = html
+            })
+            .then(() =>{
+
+                let backGroundUniverse = pathname === "/universe"
+                let backGroundExploration = pathname === "/exploration"
+                
+                if(backGroundUniverse){
+                    document.querySelector('main').style.setProperty('background-image', 'var(--img-universe)');
+
+                } else if(backGroundExploration){
+                    document.querySelector('main').style.setProperty('background-image', 'var(--img-exploration)');
+                } else{
+                    document.querySelector('main').style.setProperty('background-image', 'var(--img-home)');
+                } 
+            })
+    }
+    
+}
